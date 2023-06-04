@@ -1,0 +1,25 @@
+﻿<Window x:Class="RustFishingBot_GUI.LogsForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RustFishingBot_GUI"
+        mc:Ignorable="d"
+        Title="LogsForm" Height="214" Width="489"
+        WindowStartupLocation="Manual" Left="0" Top="0"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True">
+    <Grid Background="#1b1c20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Bot Logs" Margin="10" FontSize="16" Foreground="White" Name="Title"/>
+        <Border Grid.Row="1" BorderBrush="#e47f3c" BorderThickness="0 0 0 2"/>
+        <StackPanel Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="logPanel" Margin="0 0 20 0"/>
+            </ScrollViewer>
+        </StackPanel>
+    </Grid>
+</Window>
