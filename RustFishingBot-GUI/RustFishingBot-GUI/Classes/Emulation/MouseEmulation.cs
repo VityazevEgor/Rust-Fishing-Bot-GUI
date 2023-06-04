@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Drawing;
 using System.Threading.Tasks;
+using WindowsInput;
 
 namespace RustFishingBot_GUI.Classes.Emulation
 {
@@ -84,6 +85,15 @@ namespace RustFishingBot_GUI.Classes.Emulation
             });
         }
 
+        // кушает довольно много перативки. Надо шо то придумать
+        public static async Task MoveCamera(int x=0, int y = 0)
+        {
+            await Task.Run(() =>
+            {
+                var simulator = new InputSimulator();
+                simulator.Mouse.MoveMouseBy(x, y);
+            });
+        }
 
         public static void RightClick(Point point)
         {
@@ -104,14 +114,13 @@ namespace RustFishingBot_GUI.Classes.Emulation
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
         }
 
-        public static void CastFishingRod()
+        public static async Task SafeLeftClick(Point point)
         {
-            mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-            Thread.Sleep(5000);
+            SetCursorPos(point.X, point.Y);
+            await Task.Delay(50);
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-            Thread.Sleep(1000);
+            await Task.Delay(50);
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-            mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
         }
 
         public static async Task CastFishingRodAsync()
@@ -124,13 +133,6 @@ namespace RustFishingBot_GUI.Classes.Emulation
             mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
         }
 
-        public static void Pull()
-        {
-            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-            Thread.Sleep(1000);
-            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-            Thread.Sleep(1000);
-        }
         public static async Task PullAsync()
         {
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);

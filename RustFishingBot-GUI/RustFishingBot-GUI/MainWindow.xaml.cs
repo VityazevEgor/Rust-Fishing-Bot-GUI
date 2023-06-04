@@ -30,6 +30,7 @@ namespace RustFishingBot_GUI
             LogsForm logsForm = new LogsForm();
             logsForm.Show();
             BotMain.MainThread(logsForm);
+            //BotMain.TestMethod(logsForm);
         }
     }
 }

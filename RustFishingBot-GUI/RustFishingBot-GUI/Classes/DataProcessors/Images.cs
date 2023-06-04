@@ -10,17 +10,6 @@ namespace RustFishingBot_GUI.Classes.DataProcessors
 {
     internal class Images
     {
-        public static Bitmap CaptureScreen()
-        {
-            // FULL HD
-            var screenBounds = new Rectangle(0, 0, 1920, 1080);
-
-            // Создаем скриншот экрана
-            Bitmap bitmap = new Bitmap(screenBounds.Width, screenBounds.Height);
-            Graphics graphics = Graphics.FromImage(bitmap);
-            graphics.CopyFromScreen(screenBounds.Left, screenBounds.Top, 0, 0, screenBounds.Size);
-            return bitmap;
-        }
 
         public static async Task<Bitmap> CaptureScreenAsync()
         {
@@ -52,7 +41,7 @@ namespace RustFishingBot_GUI.Classes.DataProcessors
                             return page.GetText();
                         }
                     });
-                    return text;
+                    return text.Replace("\n", "").Replace(" ", "");
                 }
             }
         }
