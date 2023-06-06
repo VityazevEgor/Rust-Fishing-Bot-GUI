@@ -7,11 +7,9 @@ using RustFishingBot_GUI.Classes.DataProcessors;
 using RustFishingBot_GUI.Classes.Emulation;
 using System.Drawing;
 using Point = System.Drawing.Point;
-using System.Reflection.Metadata;
-using WindowsInput;
-using System.Windows.Documents;
 using System.Collections.Generic;
 using RustFishingBot_GUI.Classes.TelegramBot;
+using RustFishingBot_GUI.Classes.Settings;
 
 namespace RustFishingBot_GUI.Classes
 {
@@ -27,11 +25,11 @@ namespace RustFishingBot_GUI.Classes
         private static TgBot tgBot = null;
 
         // метод который проверяет не являеться ли пиксель зелынм в том месте где появляеться увдомления о новом предмете
-        private static async Task FishChecker(Rectangle notoficationPosition)
+        private static async Task FishChecker(Rectangle notoficationPosition, int maxWaitTime)
         {
             Point newItemPixelPos = new Point(notoficationPosition.X + 5, notoficationPosition.Y + 5);
             DateTime startTime = DateTime.Now;
-            while ((DateTime.Now - startTime).TotalMinutes < 5)
+            while ((DateTime.Now - startTime).TotalMinutes < maxWaitTime)
             {
                 if (await Images.ComparePixelsAsync(newItemPixelPos, newItemColor))
                 {
@@ -43,11 +41,11 @@ namespace RustFishingBot_GUI.Classes
             gotFish = true;
         }
 
-        public static async Task MainThread(LogsForm logsForm, bool? useTgBot = false, string token = null)
+        public static async Task MainThread(LogsForm logsForm, SettingsClass settings)
         {
-            if ((bool)useTgBot)
+            if (settings.UseTelegramBot)
             {
-                tgBot = new TgBot(token);
+                tgBot = new TgBot(settings.TelegramBotToken);
                 logsForm.AddLog("Запускаю тг бота");
             }
 
@@ -104,17 +102,17 @@ namespace RustFishingBot_GUI.Classes
                 logsForm.AddLog("Начинаю закидывать удочку");
                 await MouseEmulation.CastFishingRodAsync();
                 gotFish = false;
-                FishChecker(await Inventory.GetNewItemNotificationPosition(logsForm));
+                FishChecker(await Inventory.GetNewItemNotificationPosition(logsForm), settings.MaxFishingTime);
                 while (!gotFish)
                 {
                     logsForm.AddLog("Рыба ещё не поймана");
-                    await MouseEmulation.PullAsync();
+                    await MouseEmulation.PullAsync(settings.FishPullUpTime);
                 }
                 logsForm.AddLog("Поймал рыбу!");
                 KeyboardEmulation.SimulateKeyPress(ConsoleKey.D2); // сбрасываем анимацию доставания рыбы
 
                 // подождал анимацию поимки рыбки теперь ищем сундук
-                if (!triedToFindChest)
+                if (!triedToFindChest && settings.UseChest)
                 {
                     (chestX, chestY) = await Inventory.FindChest(logsForm);
                     triedToFindChest = true;

@@ -133,12 +133,12 @@ namespace RustFishingBot_GUI.Classes.Emulation
             mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
         }
 
-        public static async Task PullAsync()
+        public static async Task PullAsync(int timeToPull)
         {
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-            await Task.Delay(1000);
+            await Task.Delay(timeToPull);
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-            await Task.Delay(1100);
+            await Task.Delay(timeToPull);
         }
 
     }

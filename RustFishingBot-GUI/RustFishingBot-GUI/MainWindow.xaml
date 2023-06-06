@@ -1,63 +1,146 @@
-﻿<Window x:Class="RustFishingBot_GUI.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:RustFishingBot_GUI" mc:Ignorable="d" Title="Rust Fishing Bot by Egor Vityazev" Height="450" Width="800">
-    <Grid Background="#1b1c20">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <StackPanel Margin="0 0 0 20">
-                <TextBlock Text="Откройте инвентарь в игре перед тем, как нажать кнопку Начать" Foreground="White" FontSize="16" TextAlignment="Center"/>
-            </StackPanel>
-            <Grid Margin="0 0 0 20" Width="704">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <CheckBox Name="UseTelegramBotCheckBox" Content="Использовать Телеграм Бота?" Margin="0,10,20,10" Grid.Row="0">
-                    <CheckBox.Style>
-                        <Style TargetType="{x:Type CheckBox}">
-                            <Setter Property = "Foreground" Value = "White"/>
-                            <Setter Property = "Background" Value = "#2b2c30"/>
-                            <Setter Property = "BorderBrush" Value = "#2b2c30"/>
-                            <Setter Property = "FontSize" Value = "16"/>
-                            <Setter Property = "Padding" Value = "10"/>
-                            <Style.Triggers>
-                                <Trigger Property = "IsChecked" Value = "True">
-                                    <Setter Property = "Background" Value = "#e47f3c"/>
-                                    <Setter Property = "BorderBrush" Value = "#e47f3c"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </CheckBox.Style>
-                </CheckBox>
-                <TextBox Name="TelegramBotTokenTextBox" Margin="0,10,0,10" Grid.Row="1">
-                    <TextBox.Style>
-                        <Style TargetType="{x:Type TextBox}">
-                            <Setter Property = "Foreground" Value = "White"/>
-                            <Setter Property = "Background" Value = "#2b2c30"/>
-                            <Setter Property = "BorderBrush" Value = "#2b2c30"/>
-                            <Setter Property = "FontSize" Value = "16"/>
-                            <Setter Property = "Padding" Value = "10"/>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </Grid>
-            <Button Content="Начать" Background="#e47f3c" Foreground="White" FontSize="20" Padding="20 10" Click="Button_Click"/>
-            <DockPanel Margin="0 20 0 0">
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="Программа создана " Foreground="White" FontSize="14"/>
-                    <TextBlock Text="Витязевым Егором." Foreground="#e47f3c" FontSize="14"/>
-                </StackPanel>
-                <TextBlock Text="для бесплатного пользования " Foreground="White" FontSize="14"/>
-                <TextBlock Text="https://github.com/VityazevEgor/Rust-Fishing-Bot-GUI" Foreground="#e47f3c" FontSize="14" TextDecorations="Underline" Cursor="Hand" Margin="0 0 0 0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
+﻿<Window x:Class="RustFishingBot_GUI.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:RustFishingBot_GUI" mc:Ignorable="d" Title="Rust Fishing Bot by Egor Vityazev| v 1.0 (06.06.2023)" Height="450" Width="800">
+<Window.Resources>
+    <Style x:Key="TabControlButtonStyle" TargetType="{x:Type TabItem}">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="#2b2c30"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Border Name="border" BorderThickness="1" BorderBrush="Black" CornerRadius="5,5,0,0" Background="{TemplateBinding Background}">
+                        <ContentPresenter x:Name="contentPresenter" Content="{TemplateBinding Header}" HorizontalAlignment="Center" Margin="10,2" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#e47f3c"/>
                             <Setter Property="Foreground" Value="White"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Foreground" Value="#e47f3c"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </DockPanel>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#3a3b3f"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#999999"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</Window.Resources>
+    <Grid Background="#1b1c20">
+        <TabControl Background="#1b1c20" ItemContainerStyle="{StaticResource TabControlButtonStyle}">
+            <TabItem Header="Основное">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel Margin="0 0 0 20">
+                        <TextBlock Text="Откройте инвентарь в игре перед тем, как нажать кнопку Начать" Foreground="White" FontSize="16" TextAlignment="Center"/>
+                    </StackPanel>
+                    <Grid Margin="0 0 0 20" Width="704">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <CheckBox Name="UseTelegramBotCheckBox" Content="Использовать Телеграм Бота?" Margin="0,10,20,10" Grid.Row="0">
+                            <CheckBox.Style>
+                                <Style TargetType="{x:Type CheckBox}">
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Background" Value="#2b2c30"/>
+                                    <Setter Property="BorderBrush" Value="#2b2c30"/>
+                                    <Setter Property="FontSize" Value="16"/>
+                                    <Setter Property="Padding" Value="10"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Background" Value="#e47f3c"/>
+                                            <Setter Property="BorderBrush" Value="#e47f3c"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
+                        <TextBox Name="TelegramBotTokenTextBox" Margin="0,10,0,10" Grid.Row="1">
+                            <TextBox.Style>
+                                <Style TargetType="{x:Type TextBox}">
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Background" Value="#2b2c30"/>
+                                    <Setter Property="BorderBrush" Value="#2b2c30"/>
+                                    <Setter Property="FontSize" Value="16"/>
+                                    <Setter Property="Padding" Value="10"/>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </Grid>
+                    <Button Content="Начать" Background="#e47f3c" Foreground="White" FontSize="20" Padding="20 10" Click="Button_Click"/>
+                    <DockPanel Margin="0 20 0 0">
+                        <StackPanel DockPanel.Dock="Left">
+                            <TextBlock Text="Программа создана " Foreground="White" FontSize="14"/>
+                            <TextBlock Text="Витязевым Егором." Foreground="#e47f3c" FontSize="14"/>
+                        </StackPanel>
+                        <TextBlock Text="для бесплатного пользования " Foreground="White" FontSize="14"/>
+                        <TextBlock Text="https://github.com/VityazevEgor/Rust-Fishing-Bot-GUI" Foreground="#e47f3c" FontSize="14" TextDecorations="Underline" Cursor="Hand" Margin="0 0 0 0">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="#e47f3c"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </DockPanel>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Дополнительные настройки">
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <CheckBox Name="SaveLootToChestCheckBox" Margin="0,10,0,10" Content="Сейвит лут в сундук">
+            <CheckBox.Style>
+                <Style TargetType="{x:Type CheckBox}">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="#2b2c30"/>
+                    <Setter Property="BorderBrush" Value="#2b2c30"/>
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="Padding" Value="10"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Background" Value="#e47f3c"/>
+                            <Setter Property="BorderBrush" Value="#e47f3c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </CheckBox.Style>
+        </CheckBox>
+        <StackPanel Margin="0,10,0,10">
+            <Label Content="Максимальное время поимки рыбы в минутах" Foreground="White"/>
+            <TextBox Name="MaxFishingTimeTextBox" Text="Введите значение">
+                <TextBox.Style>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Background" Value="#2b2c30"/>
+                        <Setter Property="BorderBrush" Value="#2b2c30"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Padding" Value="10"/>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
         </StackPanel>
+        <StackPanel Margin="0,10,0,10">
+            <Label Content="Время подтягивания рыбы в милисекундах" Foreground="White" />
+            <TextBox Name="FishPullTimeTextBox" Text="Введите значение">
+                <TextBox.Style>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Background" Value="#2b2c30"/>
+                        <Setter Property="BorderBrush" Value="#2b2c30"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Padding" Value="10"/>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+        </StackPanel>
+    </StackPanel>
+</TabItem>
+        </TabControl>
     </Grid>
-</Window> 
+</Window>
