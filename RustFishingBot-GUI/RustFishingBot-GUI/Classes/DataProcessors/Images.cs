@@ -53,5 +53,15 @@ namespace RustFishingBot_GUI.Classes.DataProcessors
             screenshot.Dispose();
             return ActualColor == ExpectedColor;
         }
+        public static async Task<bool> ComparePixelsWithToleranceAsync(Point PixelPosition, Color ExpectedColor, int Tolerance=0)
+        {
+            Bitmap screenshot = await CaptureScreenAsync();
+            Color ActualColor = screenshot.GetPixel(PixelPosition.X, PixelPosition.Y);
+            screenshot.Dispose();
+            int redDiff = Math.Abs(ActualColor.R - ExpectedColor.R);
+            int greenDiff = Math.Abs(ActualColor.G - ExpectedColor.G);
+            int blueDiff = Math.Abs(ActualColor.B - ExpectedColor.B);
+            return redDiff <= Tolerance && greenDiff <= Tolerance && blueDiff <= Tolerance;
+        }
     }
 }

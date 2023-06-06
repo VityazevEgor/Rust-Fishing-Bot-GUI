@@ -31,6 +31,10 @@ namespace RustFishingBot_GUI.Classes.Emulation
                     SimulateKeyDown(Keys.Escape);
                     SimulateKeyUp(Keys.Escape);
                     break;
+                case ConsoleKey.D2:
+                    SimulateKeyDown(Keys.D2);
+                    SimulateKeyUp(Keys.D2);
+                    break;
                 default:
                     throw new NotSupportedException("This key is not supported for simulation.");
             }
@@ -51,7 +55,8 @@ namespace RustFishingBot_GUI.Classes.Emulation
             Tab = 0x09,
             D1 = 0x31,
             E = 0x45,
-            Escape = 0x1B
+            Escape = 0x1B,
+            D2 = 0x32
         }
     }
 }

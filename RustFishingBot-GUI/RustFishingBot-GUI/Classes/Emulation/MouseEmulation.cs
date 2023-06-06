@@ -138,7 +138,7 @@ namespace RustFishingBot_GUI.Classes.Emulation
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
             await Task.Delay(1000);
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-            await Task.Delay(1000);
+            await Task.Delay(1100);
         }
 
     }

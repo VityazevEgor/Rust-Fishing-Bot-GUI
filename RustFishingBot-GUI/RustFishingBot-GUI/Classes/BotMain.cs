@@ -11,6 +11,7 @@ using System.Reflection.Metadata;
 using WindowsInput;
 using System.Windows.Documents;
 using System.Collections.Generic;
+using RustFishingBot_GUI.Classes.TelegramBot;
 
 namespace RustFishingBot_GUI.Classes
 {
@@ -22,21 +23,35 @@ namespace RustFishingBot_GUI.Classes
         private static bool triedToFindChest = false;
         private static int chestX = -1, chestY = -1;
 
+        // класс тг бота
+        private static TgBot tgBot = null;
+
         // метод который проверяет не являеться ли пиксель зелынм в том месте где появляеться увдомления о новом предмете
         private static async Task FishChecker(Rectangle notoficationPosition)
         {
             Point newItemPixelPos = new Point(notoficationPosition.X + 5, notoficationPosition.Y + 5);
-            while (true)
+            DateTime startTime = DateTime.Now;
+            while ((DateTime.Now - startTime).TotalMinutes < 5)
             {
                 if (await Images.ComparePixelsAsync(newItemPixelPos, newItemColor))
                 {
                     gotFish = true;
-                    break;
+                    return;
                 }
             }
+            await SendTgMessage("Что-то пошло не так во время поимки рыбы. Возможно рыба сорвалась :/");
+            gotFish = true;
         }
-        public static async Task MainThread(LogsForm logsForm)
+
+        public static async Task MainThread(LogsForm logsForm, bool? useTgBot = false, string token = null)
         {
+            if ((bool)useTgBot)
+            {
+                tgBot = new TgBot(token);
+                logsForm.AddLog("Запускаю тг бота");
+            }
+
+            await SendTgMessage("Бот начал свою работу!");
             logsForm.AddLog("Бот начал свою работу!");
             WindowActivator.ActivateWindow("Rust");
             await Task.Delay(2000);
@@ -69,15 +84,23 @@ namespace RustFishingBot_GUI.Classes
                 if (udochka is null | primanka is null)
                 {
                     logsForm.AddLog("Боту нечем рыбачить!");
+                    await SendTgMessage("Боту нечем рыбачить!");
                     return;
                 }
 
                 await MouseEmulation.MoveCursorWithRightClickAsync(primanka.position, udochka.position);
                 await MouseEmulation.MoveCursorWithRightClickAsync(udochka.position, firstSlot);
                 KeyboardEmulation.SimulateKeyPress(ConsoleKey.Tab);
+
+                // берём удочку в рук
                 await Task.Delay(100);
                 KeyboardEmulation.SimulateKeyPress(ConsoleKey.D1);
+                await Task.Delay(50);
+                KeyboardEmulation.SimulateKeyPress(ConsoleKey.D2);
+                await Task.Delay(50);
+                KeyboardEmulation.SimulateKeyPress(ConsoleKey.D1);
                 await Task.Delay(3000);
+
                 logsForm.AddLog("Начинаю закидывать удочку");
                 await MouseEmulation.CastFishingRodAsync();
                 gotFish = false;
@@ -88,7 +111,7 @@ namespace RustFishingBot_GUI.Classes
                     await MouseEmulation.PullAsync();
                 }
                 logsForm.AddLog("Поймал рыбу!");
-                await Task.Delay(5000);
+                KeyboardEmulation.SimulateKeyPress(ConsoleKey.D2); // сбрасываем анимацию доставания рыбы
 
                 // подождал анимацию поимки рыбки теперь ищем сундук
                 if (!triedToFindChest)
@@ -99,7 +122,17 @@ namespace RustFishingBot_GUI.Classes
 
                 KeyboardEmulation.SimulateKeyPress(ConsoleKey.Tab);
                 await Task.Delay(2000);
-                await MouseEmulation.MoveCursorWithRightClickAsync(firstSlot, udochka.position);
+                // если удочка слоамалсь, то выбрасываем её. Иначе перемещаем обратно в инвентарь
+                if (!await Images.ComparePixelsWithToleranceAsync(brokenItemPixelPos, brokenItemPixelColor, 5))
+                {
+                    logsForm.AddLog("Удочка сломалась");
+                    await Inventory.DoJobWithItem(new Item(null, firstSlot), "Выбросить");
+                    await SendTgMessage("Удочка слоамалсь");
+                }
+                else
+                {
+                    await MouseEmulation.MoveCursorWithRightClickAsync(firstSlot, udochka.position);
+                }
             }
         }
 
@@ -117,6 +150,7 @@ namespace RustFishingBot_GUI.Classes
                 else
                 {
                     logsForm.AddLog("Я хочу кушац, но мне нечего кушац");
+                    await SendTgMessage("Я хочу кушац, но мен нечего кушац!!");
                 }
             }
             
@@ -130,6 +164,7 @@ namespace RustFishingBot_GUI.Classes
                 else
                 {
                     logsForm.AddLog("Я хочу пить, но мне нечего пить");
+                    await SendTgMessage("Я хочу пить, но мне нечего пить");
                 }
             }
         }
@@ -147,6 +182,10 @@ namespace RustFishingBot_GUI.Classes
                 {
                     MouseEmulation.RightClick(item.position);
                     logsForm.AddLog($"Засейвил {item.Info.Name}| {item.position.X} {item.position.Y}");
+                    if (item.Info.Name!="ЖИР")
+                    {
+                        await SendTgMessage($"Я засейвил {item.Info.Name}");
+                    }
                     await Task.Delay(500);
                 }
                 KeyboardEmulation.SimulateKeyPress(ConsoleKey.Escape);
@@ -161,39 +200,29 @@ namespace RustFishingBot_GUI.Classes
             }
         }
 
+        private static async Task SendTgMessage(string message)
+        {
+            if (tgBot is not null)
+            {
+                await tgBot.SendMessageToAllUsers(message);
+            }
+        }
+        
+        // метод в котором я провожу свои эксперименты
         public static async Task TestMethod(LogsForm logsForm = null)
         {
             WindowActivator.ActivateWindow("Rust");
             await Task.Delay(2000);
 
-            (chestX, chestY) = await Inventory.FindChest(logsForm);
-            KeyboardEmulation.SimulateKeyPress(ConsoleKey.Tab);
-            await Task.Delay(1000);
-            var slots = await Inventory.GetInventorySlots(logsForm);
-            var toSave = slots.Where(item => item.Info.Types == ItemsTypes.Safe).ToList();
-            if (chestX != -1 && chestY != -1 && toSave.Count > 0)
+            var sc = await Images.CaptureScreenAsync();
+            if (!await Images.ComparePixelsWithToleranceAsync(brokenItemPixelPos, brokenItemPixelColor, 5))
             {
-                KeyboardEmulation.SimulateKeyPress(ConsoleKey.Tab);
-                await Task.Delay(100);
-                await MouseEmulation.MoveCamera(chestX, chestY);
-                await Task.Delay(100);
-                KeyboardEmulation.SimulateKeyPress(ConsoleKey.E);
-                await Task.Delay(300);
-                foreach (var item in toSave)
-                {
-                    MouseEmulation.RightClick(item.position);
-                    logsForm.AddLog($"Нажал на {item.Info.Name}");
-                    await Task.Delay(500);
-                }
-                KeyboardEmulation.SimulateKeyPress(ConsoleKey.Escape);
-                await Task.Delay(100);
-                await MouseEmulation.MoveCamera(-chestX, -chestY);
-                KeyboardEmulation.SimulateKeyPress(ConsoleKey.Tab);
-                await Task.Delay(100);
+                logsForm.AddLog("Предмет сломался");
+                await Inventory.DoJobWithItem(new Item(null, firstSlot), "Выбросить");
             }
             else
             {
-                logsForm.AddLog($"Мне нечего сейвить: {toSave.Count}| {chestX}: {chestY}");
+                logsForm.AddLog("Предмет не сломался");
             }
 
 

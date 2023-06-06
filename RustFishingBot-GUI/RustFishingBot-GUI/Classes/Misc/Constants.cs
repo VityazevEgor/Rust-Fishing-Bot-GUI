@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Drawing.Printing;
 
 namespace RustFishingBot_GUI.Classes.Misc
 {
@@ -10,9 +11,9 @@ namespace RustFishingBot_GUI.Classes.Misc
             Primanka,
             Drinks,
             Udochka,
-            ToCut,
-            Safe,
-            Junk
+            ToCut, // потрошим
+            Safe, // кидаем в сундук
+            Junk // выбрасываем
         }
         public class ItemInfo
         {
@@ -33,6 +34,7 @@ namespace RustFishingBot_GUI.Classes.Misc
             new ItemInfo("СЫРАЯ", ItemsTypes.Primanka,5), // всё сырое мясо это приманка
             new ItemInfo("СЫРОЕ", ItemsTypes.Primanka,5),
             new ItemInfo("ФОРЕЛЬ", ItemsTypes.Primanka,10), // ну и форель
+            new ItemInfo("ЛИЧИНКА", ItemsTypes.Primanka, 4),
 
             // рыбы
             new ItemInfo("ЛОСОСЬ", ItemsTypes.Safe),
@@ -63,6 +65,9 @@ namespace RustFishingBot_GUI.Classes.Misc
 
             // вода
             new ItemInfo("КАНИСТРА", ItemsTypes.Drinks),
+
+            // остальное
+            new ItemInfo("ЖИР", ItemsTypes.Safe)
         };
         public class Item
         {
@@ -102,6 +107,10 @@ namespace RustFishingBot_GUI.Classes.Misc
 
         // позиция текста с действием
         public static Rectangle actionRect = new Rectangle(916, 487,88,26);
+
+        // слоамнный предмет
+        public static Point brokenItemPixelPos = new Point(664, 1050);
+        public static Color brokenItemPixelColor = Color.FromArgb(111,136, 65);
 
     }
 }

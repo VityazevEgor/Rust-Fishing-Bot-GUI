@@ -29,7 +29,7 @@ namespace RustFishingBot_GUI
         {
             LogsForm logsForm = new LogsForm();
             logsForm.Show();
-            BotMain.MainThread(logsForm);
+            BotMain.MainThread(logsForm, UseTelegramBotCheckBox.IsChecked, TelegramBotTokenTextBox.Text);
             //BotMain.TestMethod(logsForm);
         }
     }

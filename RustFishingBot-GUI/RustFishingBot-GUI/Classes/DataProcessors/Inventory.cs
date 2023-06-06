@@ -42,7 +42,7 @@ namespace RustFishingBot_GUI.Classes.DataProcessors
                     Bitmap slotImage = screenshot.Clone(slotRect, PixelFormat.Format32bppArgb);
 
                     string itemText = await Images.ReadTextFromImageAsync(slotImage);
-                    var itemInfo = itemsInfo.FirstOrDefault(item => itemText.Contains(item.Name));
+                    var itemInfo = itemsInfo.FirstOrDefault(item => itemText.ToUpper().Contains(item.Name.ToUpper()));
                     if (itemInfo is not null)
                     {
                         slots.Add(new Item(itemInfo, slotPoint));
