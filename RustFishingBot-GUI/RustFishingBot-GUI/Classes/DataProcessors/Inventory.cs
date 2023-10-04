@@ -144,7 +144,7 @@ namespace RustFishingBot_GUI.Classes.DataProcessors
         // метод который ищет на сколько надо повернуть камеру чтобы получть доступ к сундуку
         public static async Task<(int,int)> FindChest(LogsForm logsForm)
         {
-            for (int moveX = 10; moveX < 1500; moveX += 100)
+            for (int moveX = 200; moveX < 1500; moveX += 200)
             {
                 for (int moveY = -300; moveY < 300; moveY += 100)
                 {

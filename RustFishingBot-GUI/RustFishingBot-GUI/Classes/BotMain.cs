@@ -187,8 +187,9 @@ namespace RustFishingBot_GUI.Classes
                     await Task.Delay(500);
                 }
                 KeyboardEmulation.SimulateKeyPress(ConsoleKey.Escape);
-                await Task.Delay(100);
+                await Task.Delay(300);
                 await MouseEmulation.MoveCamera(-chestX, -chestY);
+                await Task.Delay(200);
                 KeyboardEmulation.SimulateKeyPress(ConsoleKey.Tab);
                 await Task.Delay(100);
             }
